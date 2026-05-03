@@ -1,0 +1,7 @@
+# request
+string direction # w s a d stop
+---
+# response
+int8 SUCCESS=1
+int8 FAIL=0
+int8 result 

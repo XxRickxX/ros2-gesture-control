@@ -1,0 +1,63 @@
+# ==========================================
+# ROS 2 & Colcon 核心忽略规则
+# ==========================================
+# 忽略所有层级下的 build, install, log 文件夹
+**/build/
+**/install/
+**/log/
+
+# 忽略 Colcon 特有的隐藏元数据文件夹
+**/.colcon/
+**/COLCON_IGNORE
+
+# ==========================================
+# C++ / CMake 编译产物忽略
+# ==========================================
+# 忽略可执行文件
+**/a.out
+**/*.out
+**/hello_world
+**/learn_cmake
+**/ros2_cpp_node
+**/cpp_node
+**/person_node
+
+# 忽略 CMake 产生的中间文件和缓存
+**/CMakeCache.txt
+**/CMakeFiles/
+**/CMakeTmp/
+**/cmake_install.cmake
+**/Makefile
+**/Makefile2
+**/*.cmake
+**/install_manifest.txt
+**/progress.marks
+**/TargetDirectories.txt
+**/CTestConfiguration.ini
+**/CTestCustom.cmake
+**/CTestTestfile.cmake
+
+# 忽略备份文件（你目录里有的 .back）
+**/*.back
+
+# ==========================================
+# Python 编译及缓存忽略
+# ==========================================
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache/
+
+# 忽略 Python 包安装产生的元数据和环境覆盖
+**/*.egg-info/
+**/demo_python_pkg.egg-info/
+**/prefix_override/
+**/build/lib/
+
+# ==========================================
+# 系统及工具产生的杂项
+# ==========================================
+.DS_Store
+tree-view.txt
+*.log
