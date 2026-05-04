@@ -10,6 +10,10 @@ A ROS2-based gesture control system that translates real-time human hand gesture
 ## 🎯 Demo
 **Supported Gestures:**
 
+<p align="center">
+  <img src="assets/demo.gif" alt="Gesture Control Demo" >
+</p>
+
 - ✋ Open palm   → Forward
 - ✊ Closed fist → Backward
 - ☝️ One-finger  → Turn left
