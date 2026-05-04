@@ -29,6 +29,7 @@ setup(
             'service_turtle_control = gesture_control_python.service_turtle_control:main',
             'client_turtle_control_keyboard = gesture_control_python.client_turtle_control_keyboard:main',
             'client_turtle_control_gesture = gesture_control_python.client_turtle_control_gesture:main',
+            'service_catch_turtle_game = gesture_control_python.service_catch_turtle_game:main',
         ],
     },
 )
