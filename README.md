@@ -1,4 +1,4 @@
-# ROS2 Gesture Teleop Control (RealSense/Webcam)
+# ROS2 Gesture Teleop Control (Webcam)
 
 [![ROS2 Humble](https://img.shields.io/badge/ROS2-Humble-blue)](https://docs.ros.org/en/humble/index.html)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
