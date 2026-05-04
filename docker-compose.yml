@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  gesture_app:
+    build: .
+    image: ros2-gesture-control:latest
+    container_name: gesture_control_container
+    network_mode: host  # Allows ROS2 nodes to communicate easily
+    environment:
+      - DISPLAY=${DISPLAY}  # Pass host display to container
+      - QT_X11_NO_MITSHM=1  # Fix for shared memory issues in GUI
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw  # Mount X11 socket for GUI
+      - ~/.Xauthority:/root/.Xauthority:rw # For X11 authentication
+    devices:
+      - /dev/video0:/dev/video0  # Mount your camera
+    privileged: true  # Necessary for some camera drivers and GPU access
+    stdin_open: true
+    tty: true
