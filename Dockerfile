@@ -38,4 +38,5 @@ RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 # Default command: launch the whole system
-CMD ["ros2", "launch", "gesture_control_python", "gesture_control.launch.py"]
+# CMD ["ros2", "launch", "gesture_control_python", "gesture_control.launch.py"]
+CMD ["ros2", "launch", "gesture_control_python", "gesture_game.launch.py"]

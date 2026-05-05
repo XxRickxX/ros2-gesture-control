@@ -5,20 +5,28 @@
 
 A ROS2-based gesture control system that translates real-time human hand gestures into robot movement commands. This project demonstrates the integration of AI (MediaPipe) with Robotic Middleware (ROS2) to create an intuitive human-machine interface.
 
-> **Project Context**: Learning ROS2 fundamentals (topics, services, actions) following the 鱼香ROS (fishros) curriculum. This project showcases incremental development — starting with keyboard control, then upgrading to gesture recognition, and finally containerizing for easy deployment.
+> **Project Context**: Learning ROS2 fundamentals (topics, services, actions) following the 鱼香ROS (fishros) curriculum. This project showcases incremental development — starting with keyboard control, then upgrading to gesture recognition, and finally creating an Interactive Turtle Catch Game. It demonstrates how to orchestrate multiple nodes, custom interfaces, and Docker to build a complete, containerized robotic application.
+
 ---
+
 ## 🎯 Demo
 **Supported Gestures:**
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Gesture Control Demo" >
+  <img src="assets/output.gif" alt="Gesture Control Demo" >
 </p>
 
-- ✋ Open palm   → Forward
-- ✊ Closed fist → Backward
-- ☝️ One-finger  → Turn left
-- ✌️ Two-finger  → Turn right
-  
+| **Gesture**            | **Action**      | **Functional Description**                                              |
+| ---------------------- | --------------- | ----------------------------------------------------------------------- |
+| ✋ **Open Palm**        | **Forward**     | Constant forward movement at default velocity.                          |
+| ✊ **Closed Fist**      | **Stop / Back** | Halt movement or execute a slow reverse adjustment.                     |
+| ☝️ **One Finger**      | **Turn Left**   | Rotate the turtle counter-clockwise (Yaw control).                      |
+| ✌️ **Two Fingers**     | **Turn Right**  | Rotate the turtle clockwise (Yaw control).                              |
+| 🤙 **Thumb & Pinky**   | **Speed Up**    | Dynamically increase the linear velocity multiplier.                    |
+| 👆 **Pointing Up**     | **Speed Down**  | Decrease linear velocity for high-precision positioning.                |
+| 🤘 **Rock**            | **Color Shift** | Trigger a service call to randomize the turtle's trail color.           |
+
+---
 ---
 
 ## 🏗️ Architecture
@@ -92,23 +100,48 @@ ros2 run gesture_control_python client_turtle_control_gesture
 
 ## 🐳 Docker Deployment (Containerized)
 
-This project is fully containerized to ensure "plug-and-play" deployment across different Linux environments.
+This project is fully containerized to ensure "plug-and-play" deployment across different Linux environments. You can either build it locally or pull the pre-built image directly from Docker Hub.
 
+### Option A: Pull from Docker Hub (Fastest)
 
+You can run the game without downloading the source code by using the pre-built image:
 
-1.  **Allow X11 Connections** (for GUI display):
-    ```bash
-    xhost +local:docker
-    ```
-2.  **Run with Docker Compose**:
-    ```bash
-    docker compose up --build
-    ```
+1. **Pull the image**:
+   ```bash
+   docker pull xxrickxx/ros2-gesture-control:0.2.0
+   ```
 
-**Key Features of our Docker Setup:**
-*   **GUI Forwarding:** Seamless X11 socket mapping to run `turtlesim` inside the container.
-*   **Hardware Access:** Direct mapping of `/dev/video*` for real-time camera inference.
-*   **Optimized Layers:** NumPy version locking to prevent binary compatibility issues.
+2. **Allow X11 Connections** (Required for GUI display):
+   ```bash
+   xhost +local:docker
+   ```
+
+3. **Run with Docker Compose**:
+   Copy the `docker-compose.yml` from this repo to your local folder and run:
+   ```bash
+   docker compose up
+   ```
+
+### Option B: Build & Run Locally
+
+If you have modified the source code, use this method:
+
+1. **Allow X11 Connections**:
+   ```bash
+   xhost +local:docker
+   ```
+
+2. **Build and Launch**:
+   ```bash
+   docker compose up --build
+   ```
+
+### **Key Features of our Docker Setup:**
+
+- **Instant Deployment:** Pull the image from `xxrickxx/ros2-gesture-control` and start playing in seconds.
+- **GUI Forwarding:** Seamless X11 socket mapping to run `turtlesim` inside the container.
+- **Hardware Access:** Direct mapping of `/dev/video*` for real-time camera inference (supports Webcams & RealSense).
+- **Optimized Layers:** NumPy version locking to prevent binary compatibility issues.
 
 ---
 
@@ -133,10 +166,11 @@ This project is fully containerized to ensure "plug-and-play" deployment across 
 - [x] Basic turtle control with ROS2 service architecture
 - [x] Keyboard control client (WASD input)
 - [x] Gesture recognition with MediaPipe
+- [x] Interactive "Turtle Catch" game logic 
 - [x] Docker containerization & one-command deployment
 - [ ] Gazebo TurtleBot3 integration
 - [ ] Isaac Sim compatibility layer
-- [ ] Multi-robot gesture orchestration
+...
 
 ---
 

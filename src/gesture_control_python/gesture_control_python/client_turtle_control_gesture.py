@@ -4,6 +4,7 @@ from ges_cl_interface.srv import TurtleCmd
 import math
 import cv2
 import mediapipe as mp
+import os 
 
 
 
@@ -22,12 +23,17 @@ class GestureControlClient(Node):
         self.get_logger().info('connected to the turtle control service')
 
         # initialize camera
-        self.cap = cv2.VideoCapture(0)
+        self.camera_id = int(os.environ.get('CAMERA_ID', '0')) # default to 0 if CAMERA_ID is not set
+        self.cap = cv2.VideoCapture(self.camera_id)
+
+        if not self.cap.isOpened():
+            self.get_logger().error(f"Cannot open camera with id {self.camera_id}")
+            raise RuntimeError(f"Cannot open camera with id {self.camera_id}")
 
         # initialize MediaPipe
         self.hands = mp_hands.Hands(
             model_complexity = 0, #simple model
-            max_num_hands = 1, # only detect one hand
+            max_num_hands = 1, # only detect one handraise RuntimeError(f"Cannot open camera with id {self.camera_id}")
             min_detection_confidence = 0.8, # minimum confidence for hand detection
             min_tracking_confidence = 0.5 # minimum confidence for hand tracking   
         )
