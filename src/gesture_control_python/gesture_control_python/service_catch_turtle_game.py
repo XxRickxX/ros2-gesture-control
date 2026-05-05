@@ -3,7 +3,6 @@ from rclpy.node import Node
 from turtlesim.msg import Pose
 from turtlesim.srv import Spawn, Kill 
 from geometry_msgs.msg import Twist
-# 注意这里：根据你的 tree，包名是 ges_cl_interface，文件名是 TurtleCmd
 from ges_cl_interface.srv import TurtleCmd
 import random
 import math
@@ -108,7 +107,7 @@ class TurtleGameServer(Node):
     def spawn_after_kill_callback(self, future):
         try:
             response = future.result()
-            # Kill 成功后，稍微延迟一点点再 Spawn，给 Turtlesim 反应时间
+            # Kill succeeded, now spawn a new target turtle
             self.spawn_new_target()
 
         except Exception as e:
@@ -124,9 +123,9 @@ class TurtleGameServer(Node):
             (self.turtle1_pose.y - self.target_pose.y)**2
         )
         
-        # 抓到后，先停止计时器或设置标志位，防止在一瞬间触发多次 catch_process
+        # catch condition: distance less than 0.9 (tune as needed)
         if distance < 0.9:
-            # 暂时把目标坐标重置，防止重复触发
+            # temporarily reset target coordinates to prevent repeated triggers
             self.target_pose = Pose() 
             self.catch_process()
 
