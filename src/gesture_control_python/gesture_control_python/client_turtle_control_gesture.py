@@ -36,7 +36,11 @@ class GestureControlClient(Node):
             'w':'Forward (5 fingers)',
             's':'Backward (Fist)',
             'a':'Turn Left(1 fingers)',
-            'd':'Turn Right(2 fingers)'
+            'd':'Turn Right(2 fingers)',
+            'change_color':'Change Color (Rock)',
+            'speed_up':'Speed Up (6 fingers)',
+            'speed_down':'Slow Down (7 fingers)',
+            'not_good':'I know you will do that...'
         }
 
         self.last_gesture = None
@@ -108,14 +112,22 @@ class GestureControlClient(Node):
         "detect hand gesture"
         f1,f2,f3,f4,f5 = angle_list
 
-        if f1 < 50 and f2 < 50 and f3 < 50 and f4 < 50 and f5 < 50:
+        if f1 < 50 and f2 < 50 and f3 < 50 and f4 < 50 and f5 < 50: # 5 fingers
             return 'w'
-        elif f1 >= 50 and f2 >= 50 and f3 >= 50 and f4 >= 50 and f5 >= 50:
+        elif f1 >= 50 and f2 >= 50 and f3 >= 50 and f4 >= 50 and f5 >= 50: # fist
             return 's'
-        elif f1 >= 50 and f2 < 50 and f3 >= 50 and f4 >= 50 and f5 >= 50:
+        elif f1 >= 50 and f2 < 50 and f3 >= 50 and f4 >= 50 and f5 >= 50: # 1 finger
             return 'a'
-        elif f1 >= 50 and f2 < 50 and f3 < 50 and f4 >= 50 and f5 >= 50:
+        elif f1 >= 50 and f2 < 50 and f3 < 50 and f4 >= 50 and f5 >= 50: # 
             return 'd' 
+        elif f1 < 50 and f2 < 50 and f3 >= 50 and f4 >= 50 and f5 < 50: # rock, change color
+            return 'change_color'
+        elif f1 < 50 and f2 >= 50 and f3 >= 50 and f4 >= 50 and f5 < 50: # six , speed up
+            return 'speed_up'
+        elif f1 < 50 and f2 < 50 and f3 >= 50 and f4 >= 50 and f5 >= 50: # seven , speed down
+            return 'speed_down'
+        elif f1 >= 50 and f2 >= 50 and f3 < 50 and f4 >= 50 and f5 >= 50: # 
+            return 'not_good'
         else:
             return None
 

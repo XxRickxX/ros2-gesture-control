@@ -14,11 +14,11 @@ class TurtleControlServer(Node):
 
         # create a topic publisher to control the turtle and a subscriber to receive the turtle's pose
         self.publisher_ = self.create_publisher(Twist, 'turtle1/cmd_vel', 10)
-        self.subscriber = self.create_subscription(
+        self.subscriber_ = self.create_subscription(
             Pose, 'turtle1/pose', self.on_pose_received, 10)
 
     def turtle_cmd_callback(self, request, response) -> TurtleCmd.Response:
-        # Handle the service request here
+        # Handle the client request here
         twist = Twist()
         cmd = request.direction.lower() # Convert to lowercase for case-insensitive comparison
         if cmd == 'w':
@@ -30,12 +30,12 @@ class TurtleControlServer(Node):
         elif cmd == 'd':
             twist.angular.z = -1.0
         else:
-            self.get_logger().warn(f"Unknown command: {request.direction}")
+            self.get_logger().warn(f"Unknown command: {cmd}")
             response.result = TurtleCmd.Response.FAIL
             return response
 
         self.publisher_.publish(twist)
-        self.get_logger().info(f"Executed command: {request.direction}")
+        self.get_logger().info(f"Executed command: {cmd}")
         response.result = TurtleCmd.Response.SUCCESS
         return response
     
