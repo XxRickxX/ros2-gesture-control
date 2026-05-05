@@ -89,12 +89,12 @@ Open three terminals and source each:
 ros2 run turtlesim turtlesim_node
 
 # Terminal 2: Control Server
-ros2 run gesture_control_python service_turtle_control
+ros2 run gesture_control_python service_catch_turtle_game
 
 # Terminal 3: Gesture Client (Camera)
 ros2 run gesture_control_python client_turtle_control_gesture
 ```
-*Tip: You can also use the launch file:* `ros2 launch gesture_control_python gesture_control.launch.py`
+*Tip: You can also use the launch file:* `ros2 launch gesture_control_python gesture_game.launch.py`
 
 ---
 
