@@ -7,23 +7,20 @@ from geometry_msgs.msg import Twist
 from ges_cl_interface.srv import TurtleCmd
 import random
 import math
-from rcl_interfaces.msg import SetParametersResult 
+from rcl_interfaces.msg import SetParametersResult, ParameterType, ParameterValue, Parameter
+from rcl_interfaces.srv import SetParameters
+from std_srvs.srv import Empty
+import time
 
 class TurtleGameServer(Node):
     def __init__(self, node_name):
         super().__init__(node_name)
 
-        # # parameter settings
-        # ## set speed multiplier parameter
-        # self.declare_parameter('k', 1.0)
-        # #self.get_logger().info("parameter k is declared, default value is 1.0")
+        self.clear_client = self.create_client(Empty, 'clear')
 
-        # ## get the parameter value
-        # self.k = self.get_parameter('k').get_parameter_value().double_value
-
-        # ## subscribe to parameter changes
-        # self.add_on_set_parameters_callback(self.parameter_update_callback)
-
+        # parameter settings
+        self.last_color_time = time.time()
+        self.param_client = self.create_client(SetParameters, '/turtlesim_node/set_parameters')
 
         # set default speed multiplier and prepare for dynamic updates
         self.speed_multiplier = 1.0 # default value, will be updated by parameter callback
@@ -54,22 +51,35 @@ class TurtleGameServer(Node):
         
         self.get_logger().info('game client is ready！interface ：TurtleCmd')
     
-    # def parameter_update_callback(self, params):   
-    #     """subscribe to parameter changes"""
-    #     result = SetParametersResult()
-    #     result.successful = False
-    #     for param in params:
-    #         if param.name == 'k' and param.type_ == param.Type.DOUBLE:
-    #             self.k = param.double_value
-    #             self.get_logger().info(f"Updated speed_multiplier: {self.k}") 
-    #             result.successful = True
+    def change_turtle_color(self):
+        if not self.param_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().warn('waiting turtlesim set_parameters service...') 
+            return
         
-    #     return result
+        req = SetParameters.Request()
+
+        # change background color r, g, b to a random color
+        color_names = ['background_r', 'background_g', 'background_b']
+        
+        for color in color_names:
+            param_value = ParameterValue()
+            param_value.type = ParameterType.PARAMETER_INTEGER
+            param_value.integer_value = random.randint(0, 255)
+
+            # create a Parameter object and append to the request
+            param = Parameter()
+            param.name = color
+            param.value = param_value
+            req.parameters.append(param)
+
+        # log the new color value
+        self.param_client.call_async(req)
+        self.get_logger().info(f"Sending Color Change Request: RGB({req.parameters[0].value.integer_value}, {req.parameters[1].value.integer_value}, {req.parameters[2].value.integer_value})")
 
     def spawn_new_target(self):
-        """异步调用 /spawn 服务"""
+        """async /spawn """
         if not self.spawn_client.wait_for_service(timeout_sec=1.0):
-            self.get_logger().warn('等待 spawn 服务中...')
+            self.get_logger().warn('waiting spawn service...')
             return
             
         req = Spawn.Request()
@@ -81,14 +91,17 @@ class TurtleGameServer(Node):
         self.get_logger().info(f"新乌龟已刷新：x={req.x:.2f}")
 
     def catch_process(self):
-        """加固版：先杀后生，确保顺序"""
-        self.get_logger().info("正在重置目标...")
+        """async kill + spawn + clear"""
+        self.get_logger().info("抓到了！立刻清屏并重置...")
+
+        # 1. 立即清屏（视觉反馈最快）
+        self.clear_client.call_async(Empty.Request())
         
-        # 1. 杀掉旧的
+        # 1. kill the old target turtle
         kill_req = Kill.Request()
         kill_req.name = self.target_name
         
-        # 使用回调机制：只有当 Kill 成功响应后，才去 Spawn 新的
+        # using callback: only spawn a new target turtle after Kill succeeds
         future = self.kill_client.call_async(kill_req)
         future.add_done_callback(self.spawn_after_kill_callback)
 
@@ -97,6 +110,7 @@ class TurtleGameServer(Node):
             response = future.result()
             # Kill 成功后，稍微延迟一点点再 Spawn，给 Turtlesim 反应时间
             self.spawn_new_target()
+
         except Exception as e:
             self.get_logger().error(f"Kill 失败: {e}")
 
@@ -132,19 +146,22 @@ class TurtleGameServer(Node):
         elif cmd == 's':
             twist.linear.x = -1.0 * self.speed_multiplier
         elif cmd == 'a':
-            twist.angular.z = 1.0 * self.speed_multiplier
+            twist.angular.z = 1.0 
         elif cmd == 'd':
-            twist.angular.z = -1.0 * self.speed_multiplier
+            twist.angular.z = -1.0 
         elif cmd == 'speed_up':
             self.speed_multiplier = min(3.0, self.speed_multiplier + 0.1)
             self.get_logger().info(f"Speed multiplier increased: {self.speed_multiplier:.2f}")
         elif cmd == 'speed_down':
             self.speed_multiplier = max(1.0, self.speed_multiplier - 0.1)
             self.get_logger().info(f"Speed multiplier decreased: {self.speed_multiplier:.2f}")
-        #elif cmd == 'change_color':
-        # elif cmd == 'stop':
-        #     twist.linear.x = 0.0
-        #     twist.angular.z = 0.0
+        elif cmd == 'change_color':
+            if time.time() - self.last_color_time > 0.5:  # limit color change frequency to prevent spamming
+                self.change_turtle_color()
+                self.last_color_time = time.time()
+        elif cmd == 'stop':
+            twist.linear.x = 0.0
+            twist.angular.z = 0.0
         else:
             twist.linear.x = 0.0
             twist.angular.z = 0.0
